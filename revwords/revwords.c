@@ -16,9 +16,17 @@ int main() {
 	char buf[BUF_SIZE];
 	ssize_t read_count;
 	while ((read_count = read_until(STDIN_FILENO, buf, BUF_SIZE, ' ')) != 0) {
+		if (read_count == -1) {
+			print_error();
+			return 1;
+		}
 		reverse(buf, read_count);
-		ssize_t write_rs = write_(STDOUT_FILENO, buf, read_count);	
-		write_(STDOUT_FILENO, " ", 1);	
+		ssize_t write_count = write_(STDOUT_FILENO, buf, read_count);	
+		write_count = write_(STDOUT_FILENO, " ", 1);	
+		if (write_count == -1) {
+			print_error();
+			return 2;
+		}
 	}
 	return 0;
 }

@@ -1,14 +1,7 @@
-#include <errno.h>
-#include <string.h>
 #include <stdio.h>
 #include <helpers.h>
 
 #define BUF_SIZE 4096
-
-void print_error() {
-	char* msg = strerror(errno);
-	write_(STDERR_FILENO, msg, strlen(msg) * sizeof(char));
-}
 
 int main() {
 	char buf[BUF_SIZE];

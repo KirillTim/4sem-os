@@ -1,6 +1,4 @@
 #include "helpers.h"
-#include <unistd.h>
-#include <stdio.h>
 
 ssize_t read_(int fd, void* buf, size_t count) {
 	size_t offset = 0;
@@ -48,4 +46,9 @@ ssize_t read_until(int fd, void * buf, size_t count, char delimiter) {
 		}
 		offset ++;	
 	}
+}
+
+void print_error() {
+	char* msg = strerror(errno);
+	write_(STDERR_FILENO, msg, strlen(msg) * sizeof(char));
 }
