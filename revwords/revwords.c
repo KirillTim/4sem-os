@@ -18,6 +18,7 @@ int main() {
 	while ((read_count = read_until(STDIN_FILENO, buf, BUF_SIZE, ' ')) != 0) {
 		reverse(buf, read_count);
 		ssize_t write_rs = write_(STDOUT_FILENO, buf, read_count);	
+		write_(STDOUT_FILENO, " ", 1);	
 	}
 	return 0;
 }
