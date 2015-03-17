@@ -1,4 +1,4 @@
-all: clean libhelpers
+all: libhelpers
 libhelpers: helpers.o
 	gcc -shared helpers.o -o libhelpers.so
 helpers.o:
