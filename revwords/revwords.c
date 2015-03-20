@@ -20,10 +20,14 @@ int main() {
 			print_error();
 			return 1;
 		}
+		
+		if (buf[read_count-1] == ' ') {
+		  reverse(buf, read_count-1);
+		}
+		else 
 		reverse(buf, read_count);
 		ssize_t write_count = write_(STDOUT_FILENO, buf, read_count);	
-		write_count = write_(STDOUT_FILENO, " ", 1);	
-		if (write_count == -1) {
+	      	if (write_count == -1) {
 			print_error();
 			return 2;
 		}
