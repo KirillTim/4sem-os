@@ -49,6 +49,23 @@ ssize_t read_until(int fd, void * buf, size_t count, char delimiter) {
 	}
 }
 
+
+int spawn(const char * file, char * const argv []) {
+    int pid = fork();
+    if (pid == 0) {
+        int result = execvp(file, argv);
+        exit(result);
+    }
+    else if (pid > 0) {
+        int result;
+        waitpid(pid, &result, 0);
+        return result;
+    }
+    else {
+        return -2;//impossible situation
+    }
+}
+
 void print_error() {
 	char* msg = strerror(errno);
 	write_(STDERR_FILENO, msg, strlen(msg) * sizeof(char));
