@@ -12,3 +12,4 @@ clean:
 	cd lib && make clean
 	cd cat && make clean
 	cd revwords && make clean
+	cd filter && make clean
