@@ -11,7 +11,7 @@ helpclean:
 libbufio: bufio.o
 	gcc -shared bufio.o -o libbufio.so -L lhelpers
 bufio.o:
-	gcc -c -fPIC -std=c99  bufio.c -o bufio.o 
+	gcc -c -g -fPIC -std=c99  bufio.c -o bufio.o 
 bufclean:
 	rm -f bufio.o
 	rm -f libbufio.so

@@ -1,16 +1,16 @@
-all: libhelpers cat revwords filter bufcat foreach
+all: libhelpers cat/cat revwords/revwords filter/filter bufcat/bufcat foreach/foreach
 
 libhelpers:
 	cd lib && make
-cat: 
+cat/cat: 
 	cd cat && make
-revwords:
+revwords/revwords:
 	cd revwords && make
-filter:
+filter/filter:
 	cd filter && make
-bufcat:
+bufcat/bufcat:
 	cd bufcat && make
-foreach:
+foreach/foreach:
 	cd foreach && make
 clean:
 	cd lib && make clean

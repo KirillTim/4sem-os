@@ -1,5 +1,7 @@
 #include "bufio.h"
 
+#include <stdio.h>
+
 #ifdef DEBUG
 #define ASSERT_DEBUG(condition) if(!(condition)) abort();
 #else
@@ -57,6 +59,7 @@ ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required) {
 }
 
 ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
+    printf("buf_getline!!!\n");
     int pl = 0;
     for (;;) {
         for (int i = pl; i < buf->size; i++) {
@@ -68,7 +71,8 @@ ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
             }
         }
         pl = buf->size;
-        ssize_t res = buf_fill(fd, buf, 1);
+        ssize_t res = buf_fill(fd, buf, buf->size + 1);
+        printf("res: %d", res);
         if (res == -1)
             return res;
     }
