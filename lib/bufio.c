@@ -46,13 +46,43 @@ ssize_t buf_fill(fd_t fd, buf_t *buf, size_t required) {
 
 ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required) {
     ASSERT_DEBUG(buf != NULL);
-    ssize_t res = write_(fd, buf->buf, buf->size);  
+    ssize_t res = write_(fd, buf->buf, required);  
     if (res == -1) {
         return res;
     }
     size_t now_size = buf->size - res;
-    memmove(buf, buf->buf+res, now_size);
+    memmove(buf->buf, buf->buf+res, now_size);
     buf->size = now_size;
     return now_size;
+}
+
+ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
+    int pl = 0;
+    for (;;) {
+        for (int i = pl; i < buf->size; i++) {
+            if (buf->buf[i] == '\n') {
+                memcpy(dest, buf->buf, i);
+                memmove(buf->buf, buf->buf+i, buf->size-i);
+                buf->size -= i;
+                return i; 
+            }
+        }
+        pl = buf->size;
+        ssize_t res = buf_fill(fd, buf, 1);
+        if (res == -1)
+            return res;
+    }
+}
+ssize_t buf_write(fd_t fd, buf_t *buf, char *src, size_t len) {
+    while (len > 0) {
+        size_t rem = buf->capacity - buf->size;
+        size_t cp = rem < len ? rem : len;
+        memcpy(buf->buf+buf->capacity, src, cp);
+        len -= cp;
+        buf->size += cp;
+        ssize_t res = buf_flush(fd, buf, buf->size);
+        if (res == -1)
+            return res;
+    }
 }
 
