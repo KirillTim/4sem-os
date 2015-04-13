@@ -36,8 +36,8 @@ int main(int argc, char* argv[]) {
         dup2(stdout_backup, 1);
         if(code == 0) {            
             if (last_n) {
-              buf[count-1] = '\n';
               count ++;
+              buf[count-1] = '\n';
             }
             if(write_(STDOUT_FILENO, buf, count) < 0)
                 return 2;
