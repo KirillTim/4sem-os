@@ -66,6 +66,18 @@ int spawn(const char * file, char * const argv []) {
     }
 }
 
+execargs_t* execargs_new(char* program, char** args) {
+    execargs_t* rv = (execargs_t*)malloc(sizeof(execargs_t));
+    return rv;
+}
+
+int exec(execargs_t* args) {
+   return spawn(args->program, args->args); 
+}
+
+int runpiped(execargs_t** programs, size_t n) {
+}
+
 void print_error() {
 	char* msg = strerror(errno);
 	write_(STDERR_FILENO, msg, strlen(msg) * sizeof(char));

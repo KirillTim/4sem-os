@@ -13,10 +13,10 @@ buf_t *buf_new(size_t capacity) {
     if (rv != NULL) {
         rv->capacity = capacity;
         rv->size = 0;
-    }
-    rv->buf = (char*)malloc(capacity);
-    if (rv->buf == NULL) {
-        return NULL;
+        rv->buf = (char*)malloc(capacity);
+        if (rv->buf == NULL) {
+            return NULL;
+        }
     }
     return rv;
 }
@@ -59,7 +59,7 @@ ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required) {
 }
 
 ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
-    printf("buf_getline!!!\n");
+    //printf("buf_getline!!!\n");
     int pl = 0;
     for (;;) {
         for (int i = pl; i < buf->size; i++) {
@@ -72,7 +72,7 @@ ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
         }
         pl = buf->size;
         ssize_t res = buf_fill(fd, buf, buf->size + 1);
-        printf("res: %d", res);
+        //printf("res: %d", res);
         if (res == -1)
             return res;
     }
