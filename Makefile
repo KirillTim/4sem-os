@@ -1,4 +1,4 @@
-all: libhelpers cat/cat revwords/revwords filter/filter bufcat/bufcat foreach/foreach
+all: libhelpers cat/cat revwords/revwords filter/filter bufcat/bufcat foreach/foreach filesender/filesender
 
 libhelpers:
 	cd lib && make
@@ -12,6 +12,8 @@ bufcat/bufcat:
 	cd bufcat && make
 foreach/foreach:
 	cd foreach && make
+filesender/filesender:
+	cd filesender && make
 clean:
 	cd lib && make clean
 	cd cat && make clean
@@ -19,3 +21,4 @@ clean:
 	cd filter && make clean
 	cd bufcat && make clean
 	cd foreach && make clean
+	cd filesender && make clean
