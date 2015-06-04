@@ -15,11 +15,12 @@ int spawn(const char * file, char * const argv []);
 void print_error();
 
 struct execargs_t {
-    char* program;
-    char** args; 
+    const char* program;
+    char** argv; 
 };
 typedef struct execargs_t execargs_t;
-execargs_t* execargs_new(char* program, char** args); 
+execargs_t* execargs_new(const char* program, char* argv[]); 
+void free_execargs(execargs_t* e);
 int exec(execargs_t* args);
 int runpiped(execargs_t** programs, size_t n);
 #endif // HELPERS_H

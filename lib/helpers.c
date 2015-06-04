@@ -1,5 +1,9 @@
-#include "helpers.h"
+#define _POSIX_SOURCE
+#define _GNU_SOURCE
 
+#include "helpers.h"
+#include <signal.h>
+#include <stdio.h>
 ssize_t read_(int fd, void* buf, size_t count) {
 	size_t offset = 0;
 	for(;;) {
@@ -50,7 +54,12 @@ ssize_t read_until(int fd, void * buf, size_t count, char delimiter) {
 }
 
 
-int spawn(const char * file, char * const argv []) {
+int spawn(const char * file, char * const argv[]) {
+    fprintf(stderr ,"spawn: ");
+    for (int i = 0; argv[i]; i++) {
+        fprintf(stderr ,"%s, ",argv[i]);
+    }
+    fprintf(stderr ,"\n");
     int pid = fork();
     if (pid == 0) {
         int result = execvp(file, argv);
@@ -66,16 +75,34 @@ int spawn(const char * file, char * const argv []) {
     }
 }
 
-execargs_t* execargs_new(char* program, char** args) {
+execargs_t* execargs_new(const char* program, char* argv[]) {
     execargs_t* rv = (execargs_t*)malloc(sizeof(execargs_t));
+    rv->program = program;
+    rv->argv = argv;
     return rv;
 }
 
+void free_execargs(execargs_t* e) {
+    free((void*)e->program);
+    for (int i = 0; e->argv[i] != NULL; i++) {
+        free((void*)e->argv[i]);
+    }
+    free(e);
+}
+
 int exec(execargs_t* args) {
-   return spawn(args->program, args->args); 
+   // printf("exec: prog= %s, args[0]=%s\n",args->program, args->argv[0]);
+    fprintf(stderr ,"exec(%s): ",args->program);
+    for (int i = 0; args->argv[i]; i++) {
+        fprintf(stderr ,"%s, ",args->argv[i]);
+    }
+    fprintf(stderr ,"\n");
+    
+    return execvp(args->program, args->argv); 
 }
 
 int runpiped(execargs_t** programs, size_t n) {
+
 }
 
 void print_error() {

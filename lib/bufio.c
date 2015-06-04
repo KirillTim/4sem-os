@@ -8,7 +8,7 @@
 #define ASSERT_DEBUG(condition)
 #endif
 
-buf_t *buf_new(size_t capacity) {
+buf_t* buf_new(size_t capacity) {
     buf_t* rv = (buf_t*)malloc(sizeof(buf_t));
     if (rv != NULL) {
         rv->capacity = capacity;
@@ -22,6 +22,7 @@ buf_t *buf_new(size_t capacity) {
 }
 
 void buf_free(buf_t *buf) {
+    free(buf->buf);
     free(buf);
 }
 
@@ -77,11 +78,12 @@ ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
             return res;
     }
 }
+
 ssize_t buf_write(fd_t fd, buf_t *buf, char *src, size_t len) {
     while (len > 0) {
         size_t rem = buf->capacity - buf->size;
         size_t cp = rem < len ? rem : len;
-        memcpy(buf->buf+buf->capacity, src, cp);
+        memcpy(buf->buf+buf->size, src, cp);
         len -= cp;
         buf->size += cp;
         ssize_t res = buf_flush(fd, buf, buf->size);
