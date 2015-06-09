@@ -39,24 +39,33 @@ size_t buf_size(buf_t *buf) {
 ssize_t buf_fill(fd_t fd, buf_t *buf, size_t required) {
     ASSERT_DEBUG(buf != NULL);
     ASSERT_DEBUG(required <= buf->capacity);
-    ssize_t res = read_(fd, buf->buf + buf->size, required - buf->size);
-    if (res == -1) {
-       return res;
+    while (buf->size < required) {
+        ssize_t res = read(fd, buf->buf + buf->size, buf->capacity - buf->size);
+        if (res == -1) {
+            return res;
+        }
+        buf->size += res;
     }
-    buf->size += res;
     return buf->size;
 }
 
 ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required) {
     ASSERT_DEBUG(buf != NULL);
-    ssize_t res = write_(fd, buf->buf, required);  
-    if (res == -1) {
-        return res;
+    size_t count = 0;
+    if (required > buf->size) {
+        required = buf->size;
     }
-    size_t now_size = buf->size - res;
-    memmove(buf->buf, buf->buf+res, now_size);
+    while (count < required) {
+        ssize_t res = write(fd, buf->buf + count, buf->size-count);
+        if (res == -1) {
+            return res;
+        }
+        count += res;
+    }
+    size_t now_size = buf->size - count;
+    memmove(buf->buf, buf->buf + count, now_size);
     buf->size = now_size;
-    return now_size;
+    return count;
 }
 
 ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
