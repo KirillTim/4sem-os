@@ -40,6 +40,10 @@ int buf_is_full(buf_t *buf) {
     return buf->size == buf->capacity;
 }
 
+int buf_is_empty(buf_t *buf) {
+    return buf->size == 0;
+}
+
 ssize_t buf_fill(fd_t fd, buf_t *buf, size_t required) {
     ASSERT_DEBUG(buf != NULL);
     ASSERT_DEBUG(required <= buf->capacity);
