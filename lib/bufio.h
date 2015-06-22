@@ -19,6 +19,6 @@ int buf_is_full(buf_t *);
 int buf_is_empty(buf_t *);
 ssize_t buf_fill(fd_t fd, buf_t *buf, size_t required);
 ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required);
-ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest);
+ssize_t buf_getline(int fd, buf_t *buf, char sep, void *ebuf);
 ssize_t buf_write(fd_t fd, buf_t *buf, char *src, size_t len);
 #endif // BUFIO_H

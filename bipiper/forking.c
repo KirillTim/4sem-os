@@ -26,6 +26,7 @@ void transfer(fd_t in, fd_t out) {
         int res = buf_fill(in, buf, 1);
         buf_flush(out, buf, buf_size(buf));
         if (res == 0) {
+            shutdown(out, SHUT_WR);
             return ;
         }
         if (res < 0) {

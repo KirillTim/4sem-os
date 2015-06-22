@@ -49,8 +49,11 @@ ssize_t buf_fill(fd_t fd, buf_t *buf, size_t required) {
     ASSERT_DEBUG(required <= buf->capacity);
     while (buf->size < required) {
         ssize_t res = read(fd, buf->buf + buf->size, buf->capacity - buf->size);
-        if (res == -1) {
+        if (res < 0) {
             return res;
+        }
+        if (res == 0) {
+            return buf->size;
         }
         buf->size += res;
     }
@@ -63,9 +66,11 @@ ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required) {
     if (required > buf->size) {
         required = buf->size;
     }
-    while (count < required) {
+    while (count < required && buf->size > 0) {
         ssize_t res = write(fd, buf->buf + count, buf->size-count);
-        if (res == -1) {
+        if (res < 0) {
+            memmove(buf->buf, buf->buf + count, buf->size - count);
+            buf->size -= count;
             return res;
         }
         count += res;
@@ -75,24 +80,34 @@ ssize_t buf_flush(fd_t fd, buf_t *buf, size_t required) {
     buf->size = now_size;
     return count;
 }
-
-ssize_t buf_getline(fd_t fd, buf_t *buf, char *dest) {
-    //printf("buf_getline!!!\n");
-    int pl = 0;
-    for (;;) {
-        for (int i = pl; i < buf->size; i++) {
-            if (buf->buf[i] == '\n') {
-                memcpy(dest, buf->buf, i);
-                memmove(buf->buf, buf->buf+i, buf->size-i);
-                buf->size -= i;
-                return i; 
+ssize_t buf_getline(int fd, buf_t *buf, char sep, void *ebuf) {
+    while(buf->size < buf->capacity) {
+        ssize_t res = buf_fill(fd, buf, buf->size + 1);
+        if(res < 0) {
+            return res;
+        }
+        char *data = buf->buf;
+        int spos = buf->size;
+        int mpos = buf->size;
+        for(int i = 0; i < buf->size; i++) {
+            if(data[i] == sep) {
+                spos = i;
+                mpos = i + 1;
+                break;
             }
         }
-        pl = buf->size;
-        ssize_t res = buf_fill(fd, buf, buf->size + 1);
-        //printf("res: %d", res);
-        if (res == -1)
-            return res;
+        if(spos == 0 && buf->size > 0) {
+            memmove(data, data + 1, buf->size - 1);
+            buf->size--;
+            return buf_getline(fd, buf, sep, ebuf);
+        }
+        if(spos == buf->size && buf->size < buf->capacity && res > 0) {
+            continue;
+        }
+        memcpy(ebuf, data, spos);
+        memmove(data, data + mpos, buf->size - mpos);
+        buf->size -= mpos;
+        return spos;
     }
 }
 
